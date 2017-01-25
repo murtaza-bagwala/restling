@@ -1,1 +1,1 @@
-web: gradle appRun
+web: sh target/bin/webapp
