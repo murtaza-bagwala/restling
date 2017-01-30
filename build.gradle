@@ -1,8 +1,8 @@
 apply plugin: 'java'
 apply plugin: 'groovy'
-apply plugin: 'distribution'
 
-sourceCompatibility = 1.5
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 version = '1.0'
 
 repositories {
@@ -23,7 +23,11 @@ buildscript {
         maven { url 'http://oss.jfrog.org/artifactory/oss-snapshot-local' }
     }
 }
-
+configurations{
+	 all*.resolutionStrategy {
+        force "org.codehaus.groovy:groovy-all:2.4.6"
+    }
+}
 
 dependencies {
     compile 'org.webjars:bootstrap:3.2.0'
@@ -37,9 +41,6 @@ dependencies {
 }
 
 war {
-    archiveName 'helloGretty.war'
+    archiveName 'quotes-api.war'
 }
 
-task stage {
-  dependsOn installDist
-}
