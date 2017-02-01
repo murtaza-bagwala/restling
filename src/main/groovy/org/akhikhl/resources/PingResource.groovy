@@ -14,9 +14,11 @@ import org.restlet.resource.ServerResource
 @CompileStatic
 class PingResource extends ServerResource {
 
+    Service service = Service.getService()
+
     @Post
     Quotes pinged(HashTag hashTag) {
-        return Service.getData(hashTag.getCategory());
+        return service.getData(hashTag.getCategory(), hashTag.getPage_no());
     }
 
     @Options

@@ -4,4 +4,5 @@ import groovy.transform.Canonical
 @Canonical
 class HashTag {
     String category
+    Integer page_no
 }
