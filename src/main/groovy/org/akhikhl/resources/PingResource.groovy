@@ -18,16 +18,6 @@ class PingResource extends ServerResource {
 
     @Post
     Quotes pinged(HashTag hashTag) {
-        return service.getData(hashTag.getCategory(), hashTag.getPage_no());
+        return service.getData(hashTag.getCategory(), hashTag.getPage_no())
     }
-
-    @Options
-    boolean pinged() {
-        Set<Method> methods = new HashSet();
-        methods.add(Method.ALL)
-        response.accessControlAllowOrigin = "*"
-        response.accessControlAllowMethods = methods
-        return true
-    }
-
 }

@@ -4,6 +4,9 @@ import groovy.json.JsonSlurper
 import org.akhikhl.resources.pojo.Quote
 import org.akhikhl.resources.pojo.Quotes
 
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
 class Service {
     static Service service
     Quotes twitterQuotes
@@ -30,10 +33,12 @@ class Service {
             if (pageNo == 1) {
                 twitterQuotes = new Quotes()
                 prepareTwitterRequest(category).each { status ->
-                    Quote quote = new Quote(status.text)
-                    quote.author = status.user.name
-                    twitterQuotes.add(quote)
-                    twitterQuotes.incrementCount()
+                    Quote quote = new Quote(removeUrl(status.text))
+                    if (!twitterQuotes.quotes.any{twitterQuote -> quote.quote == twitterQuote.quote}) {
+                        quote.author = status.user.name
+                        twitterQuotes.add(quote)
+                        twitterQuotes.incrementCount()
+                    }
                 }
             }
             quotes.setTotal_count(twitterQuotes.total_count)
@@ -64,14 +69,25 @@ class Service {
     }
 
     private Collection prepareTwitterRequest(String category) {
-        def url = new URL("https://api.twitter.com/1.1/search/tweets.json?q=%23quotes%23quote")
+        def url = new URL("https://api.twitter.com/1.1/search/tweets.json?q=%23" + category)
         def connection = (HttpURLConnection) url.openConnection()
         connection.setRequestMethod("GET")
         connection.setRequestProperty("Authorization", "Bearer " +
                 "AAAAAAAAAAAAAAAAAAAAAP5ZywAAAAAAVFaY7ro3RufF9%2BRRg1pYHGvAo%2Bk" +
                 "%3DJL5DbUNfq3Zl6xpbF1Bzj8BxK1JZCXrZ7rg15j8sheCEKsngcd")
-        connection.setRequestProperty("Accept", "application/json")
+        connection.setRequestProperty "Accept", "application/json"
         Object object = new JsonSlurper().parse(connection.getInputStream())
         return object.statuses.collect()
+    }
+
+    private static String removeUrl(String commentstr)  {
+        String urlPattern = $/((https|http):?((/)|(\\))+[\w\d:#@%/;$()~_?\\+-=.&]*)/$
+        Matcher matcher = commentstr =~ urlPattern
+        int count = 0;
+        while (matcher.find()) {
+            commentstr = commentstr.replaceAll(matcher.group(count), "").trim();
+            count++;
+        }
+        return commentstr;
     }
 }
