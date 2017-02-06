@@ -69,7 +69,7 @@ class Service {
     }
 
     private Collection prepareTwitterRequest(String category) {
-        def url = new URL("https://api.twitter.com/1.1/search/tweets.json?q=%23" + category)
+        def url = new URL("https://api.twitter.com/1.1/search/tweets.json?q=%23quotes%23quote%23" + category)
         def connection = (HttpURLConnection) url.openConnection()
         connection.setRequestMethod("GET")
         connection.setRequestProperty("Authorization", "Bearer " +
@@ -81,13 +81,21 @@ class Service {
     }
 
     private static String removeUrl(String commentstr)  {
-        String urlPattern = $/((https|http):?((/)|(\\))+[\w\d:#@%/;$()~_?\\+-=.&]*)/$
-        Matcher matcher = commentstr =~ urlPattern
+        String urlPattern = $/((https|http):?((\/)|(\\))+[\w\d:#@%/;$()~_?\\+-=.&]*)/$
+        String retweetPattern = $/(^RT\s@[\w\d_]*:)/$
+        Matcher matcher = commentstr =~ retweetPattern
         int count = 0;
+        while (matcher.find()) {
+            commentstr = commentstr.replaceAll(matcher.group(count), "").trim();
+            count++;
+        }
+        matcher = commentstr =~ urlPattern
+        count = 0;
         while (matcher.find()) {
             commentstr = commentstr.replaceAll(matcher.group(count), "").trim();
             count++;
         }
         return commentstr;
     }
+
 }
