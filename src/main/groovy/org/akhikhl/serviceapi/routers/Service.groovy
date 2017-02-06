@@ -82,7 +82,7 @@ class Service {
 
     private static String removeUrl(String commentstr)  {
         String urlPattern = $/((https|http):?((\/)|(\\))+[\w\d:#@%/;$()~_?\\+-=.&]*)/$
-        String retweetPattern = $/(^RT\s@[\w\d_]*:)/$
+        String retweetPattern = $/(RT[\s@\w\d_]*:)/$
         Matcher matcher = commentstr =~ retweetPattern
         int count = 0;
         while (matcher.find()) {
